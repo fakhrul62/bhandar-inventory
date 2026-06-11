@@ -34,6 +34,9 @@ export function StorefrontClient({ storeId, products }: { storeId: string; produ
   const [type, setType] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedVariantId, setSelectedVariantId] = useState<string>("");
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
   const [state, formAction, pending] = useActionState(createCheckoutAction, { error: undefined } as { error?: string });
   const { items, hydrated, addItem, removeItem, setQuantity } = useCartStore();
   const filtered = products.filter((product) => {
@@ -64,6 +67,30 @@ export function StorefrontClient({ storeId, products }: { storeId: string; produ
       unitPrice: price,
       currency: product.currency,
     });
+  }
+
+  function useCurrentLocation() {
+    if (!navigator.geolocation) {
+      setLocationError("Current location is not supported on this device.");
+      return;
+    }
+
+    setLocating(true);
+    setLocationError("");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          lat: Number(position.coords.latitude.toFixed(6)),
+          lng: Number(position.coords.longitude.toFixed(6)),
+        });
+        setLocating(false);
+      },
+      () => {
+        setLocationError("Could not get your location. You can still type the address manually.");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 12_000, maximumAge: 60_000 },
+    );
   }
 
   return (
@@ -178,9 +205,37 @@ export function StorefrontClient({ storeId, products }: { storeId: string; produ
           {state.error && <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{state.error}</div>}
           <input type="hidden" name="storeId" value={storeId} />
           <input type="hidden" name="items" value={cartPayload} />
+          <input type="hidden" name="locationLat" value={location?.lat ?? ""} />
+          <input type="hidden" name="locationLng" value={location?.lng ?? ""} />
           <Input name="buyerName" placeholder="Your name" required />
           <Input name="buyerEmail" type="email" placeholder="Email" required />
           <Input name="buyerPhone" placeholder="Phone" required />
+          <label className="block space-y-1.5">
+            <span className="text-sm font-medium text-slate-800">Delivery address</span>
+            <textarea
+              name="buyerAddress"
+              rows={3}
+              required
+              placeholder="House, road, area, city"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-[#0f6b3a] focus:ring-2 focus:ring-[#f5a623]"
+            />
+          </label>
+          <Input name="deliveryNote" placeholder="Delivery note (optional)" />
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-slate-900">Current location</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {location ? `${location.lat}, ${location.lng}` : "Optional, helps the seller deliver faster."}
+                </p>
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={useCurrentLocation} disabled={locating}>
+                {locating && <Loader2 className="h-4 w-4 animate-spin" />}
+                Use location
+              </Button>
+            </div>
+            {locationError && <p className="mt-2 text-xs text-red-600">{locationError}</p>}
+          </div>
           <select name="paymentMethod" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm">
             <option value="STRIPE">Card payment</option>
             <option value="DEV_MOBILE">Dev mobile payment</option>

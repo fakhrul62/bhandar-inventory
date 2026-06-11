@@ -76,6 +76,10 @@ export const checkoutSchema = z.object({
   buyerName: z.string().min(2, "Name is required").max(80),
   buyerEmail: emailSchema,
   buyerPhone: z.string().min(8, "Phone number is required").max(20),
+  buyerAddress: z.string().min(8, "Delivery address is required").max(500),
+  deliveryNote: z.string().max(300).optional(),
+  locationLat: z.coerce.number().min(-90).max(90).optional().nullable(),
+  locationLng: z.coerce.number().min(-180).max(180).optional().nullable(),
   paymentMethod: z.enum(["STRIPE", "DEV_MOBILE"]),
   items: z
     .array(

@@ -136,6 +136,10 @@ model Order {
   buyerEmail    String
   buyerName     String
   buyerPhone    String
+  buyerAddress  String        @default("")
+  deliveryNote  String?
+  locationLat   Float?
+  locationLng   Float?
   totalAmount   Decimal       @db.Decimal(12, 2)
   currency      Currency      @default(BDT)
   status        OrderStatus   @default(PENDING)

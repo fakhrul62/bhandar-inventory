@@ -1,11 +1,15 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { checkoutSchema } from "@/lib/validators";
 import { rateLimits } from "@/lib/redis";
 import { stripe } from "@/lib/stripe";
 import { getBaseUrl } from "@/lib/utils";
+import { ensureUserRecord } from "@/lib/auth";
+
+const orderStatuses = new Set(["PENDING", "PAID", "FAILED", "REFUNDED"]);
 
 export async function createCheckoutAction(_prevState: { error?: string }, formData: FormData) {
   const limit = await rateLimits.orders.limit("server-action");
@@ -18,6 +22,10 @@ export async function createCheckoutAction(_prevState: { error?: string }, formD
     buyerName: formData.get("buyerName"),
     buyerEmail: formData.get("buyerEmail"),
     buyerPhone: formData.get("buyerPhone"),
+    buyerAddress: formData.get("buyerAddress"),
+    deliveryNote: formData.get("deliveryNote") || undefined,
+    locationLat: formData.get("locationLat") || undefined,
+    locationLng: formData.get("locationLng") || undefined,
     paymentMethod: formData.get("paymentMethod"),
     items: JSON.parse(String(formData.get("items") || "[]")),
   });
@@ -64,6 +72,10 @@ export async function createCheckoutAction(_prevState: { error?: string }, formD
       buyerEmail: parsed.data.buyerEmail,
       buyerName: parsed.data.buyerName,
       buyerPhone: parsed.data.buyerPhone,
+      buyerAddress: parsed.data.buyerAddress,
+      deliveryNote: parsed.data.deliveryNote || null,
+      locationLat: parsed.data.locationLat ?? null,
+      locationLng: parsed.data.locationLng ?? null,
       totalAmount: total,
       currency,
       paymentMethod: parsed.data.paymentMethod,
@@ -98,4 +110,57 @@ export async function createCheckoutAction(_prevState: { error?: string }, formD
   });
 
   redirect(session.url || `/store/${order.store.slug}`);
+}
+
+async function ensureOwnedOrder(orderId: string) {
+  const user = await ensureUserRecord();
+  const order = await prisma.order.findFirst({
+    where: {
+      id: orderId,
+      store: { userId: user.id },
+    },
+    include: { store: true },
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  return order;
+}
+
+export async function updateOrderAction(_prevState: { error?: string; success?: string }, formData: FormData) {
+  const id = String(formData.get("id") || "");
+  const status = String(formData.get("status") || "");
+  const paymentRef = String(formData.get("paymentRef") || "").trim();
+  const deliveryNote = String(formData.get("deliveryNote") || "").trim();
+
+  if (!id || !orderStatuses.has(status)) {
+    return { error: "Invalid order update" };
+  }
+
+  const order = await ensureOwnedOrder(id);
+  await prisma.order.update({
+    where: { id },
+    data: {
+      status: status as "PENDING" | "PAID" | "FAILED" | "REFUNDED",
+      paymentRef: paymentRef || null,
+      deliveryNote: deliveryNote || null,
+    },
+  });
+
+  revalidatePath("/dashboard/orders");
+  revalidatePath("/dashboard");
+  revalidatePath(`/store/${order.store.slug}`);
+  return { success: "Order updated" };
+}
+
+export async function deleteOrderAction(formData: FormData) {
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+
+  await ensureOwnedOrder(id);
+  await prisma.order.delete({ where: { id } });
+  revalidatePath("/dashboard/orders");
+  revalidatePath("/dashboard");
 }
