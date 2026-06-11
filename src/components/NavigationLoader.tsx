@@ -3,6 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
+const MIN_VISIBLE_MS = 700;
+const SETTLE_HIDE_DELAY_MS = 160;
+const SAFETY_TIMEOUT_MS = 15_000;
+
 function isModifiedClick(event: MouseEvent) {
   return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
 }
@@ -19,37 +23,107 @@ export function NavigationLoader() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadingRef = useRef(false);
+  const startedAtRef = useRef(0);
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const safetyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    setLoading(false);
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+    if (!loadingRef.current) return;
+
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
     }
+
+    const elapsed = Date.now() - startedAtRef.current;
+    const minimumRemaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
+    const hideDelay = Math.max(SETTLE_HIDE_DELAY_MS, minimumRemaining);
+
+    hideTimeoutRef.current = setTimeout(() => {
+      loadingRef.current = false;
+      setLoading(false);
+      if (safetyTimeoutRef.current) {
+        clearTimeout(safetyTimeoutRef.current);
+        safetyTimeoutRef.current = null;
+      }
+    }, hideDelay);
   }, [pathname, searchParams]);
 
   useEffect(() => {
     function startLoading() {
-      setLoading(true);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
       }
-      timeoutRef.current = setTimeout(() => setLoading(false), 12_000);
+
+      if (!loadingRef.current) {
+        startedAtRef.current = Date.now();
+        loadingRef.current = true;
+      }
+
+      setLoading(true);
+      if (safetyTimeoutRef.current) {
+        clearTimeout(safetyTimeoutRef.current);
+      }
+      safetyTimeoutRef.current = setTimeout(() => {
+        loadingRef.current = false;
+        setLoading(false);
+      }, SAFETY_TIMEOUT_MS);
+    }
+
+    function stopLoading() {
+      loadingRef.current = false;
+      setLoading(false);
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
+      }
+      if (safetyTimeoutRef.current) {
+        clearTimeout(safetyTimeoutRef.current);
+        safetyTimeoutRef.current = null;
+      }
+    }
+
+    function getAnchor(target: EventTarget | null) {
+      if (!(target instanceof Element)) return null;
+      return target.closest("a[href]") as HTMLAnchorElement | null;
+    }
+
+    function shouldStartForAnchor(anchor: HTMLAnchorElement) {
+      if (anchor.target && anchor.target !== "_self") return false;
+      if (anchor.hasAttribute("download")) return false;
+
+      const url = new URL(anchor.href, window.location.href);
+      if (url.origin !== window.location.origin) return false;
+      if (isSamePageUrl(url)) return false;
+
+      return true;
+    }
+
+    function shouldStartForHistoryUrl(url: string | URL | null | undefined) {
+      if (!url) return false;
+
+      const nextUrl = new URL(url, window.location.href);
+      if (nextUrl.origin !== window.location.origin) return false;
+      if (isSamePageUrl(nextUrl)) return false;
+
+      return true;
     }
 
     function handleClick(event: MouseEvent) {
       if (event.defaultPrevented || isModifiedClick(event)) return;
 
-      const target = event.target as Element | null;
-      const anchor = target?.closest("a[href]") as HTMLAnchorElement | null;
-      if (!anchor) return;
-      if (anchor.target && anchor.target !== "_self") return;
-      if (anchor.hasAttribute("download")) return;
+      const anchor = getAnchor(event.target);
+      if (!anchor || !shouldStartForAnchor(anchor)) return;
 
-      const url = new URL(anchor.href, window.location.href);
-      if (url.origin !== window.location.origin) return;
-      if (isSamePageUrl(url)) return;
+      startLoading();
+    }
+
+    function handlePointerDown(event: MouseEvent) {
+      if (event.defaultPrevented || isModifiedClick(event)) return;
+
+      const anchor = getAnchor(event.target);
+      if (!anchor || !shouldStartForAnchor(anchor)) return;
 
       startLoading();
     }
@@ -63,15 +137,38 @@ export function NavigationLoader() {
       startLoading();
     }
 
-    window.addEventListener("click", handleClick, true);
-    window.addEventListener("submit", handleSubmit, true);
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+
+    window.history.pushState = function pushState(...args) {
+      if (shouldStartForHistoryUrl(args[2])) {
+        startLoading();
+      }
+      return originalPushState.apply(this, args);
+    };
+
+    window.history.replaceState = function replaceState(...args) {
+      if (shouldStartForHistoryUrl(args[2])) {
+        startLoading();
+      }
+      return originalReplaceState.apply(this, args);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown, true);
+    document.addEventListener("click", handleClick, true);
+    document.addEventListener("submit", handleSubmit, true);
+    window.addEventListener("popstate", startLoading);
+    window.addEventListener("pageshow", stopLoading);
 
     return () => {
-      window.removeEventListener("click", handleClick, true);
-      window.removeEventListener("submit", handleSubmit, true);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
+      document.removeEventListener("pointerdown", handlePointerDown, true);
+      document.removeEventListener("click", handleClick, true);
+      document.removeEventListener("submit", handleSubmit, true);
+      window.removeEventListener("popstate", startLoading);
+      window.removeEventListener("pageshow", stopLoading);
+      stopLoading();
     };
   }, []);
 
