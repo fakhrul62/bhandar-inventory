@@ -1,9 +1,9 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
+import Image from "next/image";
 import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { saveProductAction, type ActionState } from "@/actions/products";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
@@ -39,30 +39,69 @@ export function ProductForm({ product }: ProductFormProps) {
       : [{ label: "", value: "", additionalPrice: 0, stock: null }],
   );
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const [uploadError, setUploadError] = useState("");
 
   const variantsJson = useMemo(() => JSON.stringify(variants.filter((item) => item.label && item.value)), [variants]);
 
   async function uploadFile(file: File, bucket: string) {
-    const supabase = createClient();
-    const path = `${crypto.randomUUID()}-${file.name}`;
-    const { error } = await supabase.storage.from(bucket).upload(path, file, {
-      cacheControl: "3600",
-      upsert: false,
+    return new Promise<string>((resolve, reject) => {
+      const body = new FormData();
+      body.append("bucket", bucket);
+      body.append("file", file);
+
+      const request = new XMLHttpRequest();
+      request.open("POST", "/api/uploads");
+
+      request.upload.onprogress = (event) => {
+        if (!event.lengthComputable) return;
+        setUploadProgress(Math.max(8, Math.round((event.loaded / event.total) * 90)));
+      };
+
+      request.onload = () => {
+        try {
+          const data = JSON.parse(request.responseText || "{}") as { url?: string; error?: string };
+          if (request.status >= 200 && request.status < 300 && data.url) {
+            setUploadProgress(100);
+            resolve(data.url);
+            return;
+          }
+          reject(new Error(data.error || "Upload failed"));
+        } catch {
+          reject(new Error("Upload failed"));
+        }
+      };
+
+      request.onerror = () => reject(new Error("Network error while uploading"));
+      request.send(body);
     });
-    if (error) throw error;
-    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-    return data.publicUrl;
   }
 
   async function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
     setUploading(true);
+    setUploadError("");
+    setUploadProgress(5);
     try {
-      const urls = await Promise.all(files.map((file) => uploadFile(file, "product-images")));
+      const urls: string[] = [];
+      for (const [index, file] of files.entries()) {
+        setUploadMessage(`Uploading image ${index + 1} of ${files.length}`);
+        urls.push(await uploadFile(file, "product-images"));
+      }
       setImageUrls((current) => [...current, ...urls]);
+      setUploadMessage("Image upload complete");
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Image upload failed");
+      setUploadMessage("");
     } finally {
       setUploading(false);
+      event.target.value = "";
+      setTimeout(() => {
+        setUploadProgress(0);
+        setUploadMessage("");
+      }, 1200);
     }
   }
 
@@ -70,10 +109,22 @@ export function ProductForm({ product }: ProductFormProps) {
     const file = event.target.files?.[0];
     if (!file) return;
     setUploading(true);
+    setUploadError("");
+    setUploadProgress(5);
+    setUploadMessage("Uploading digital file");
     try {
       setFileUrl(await uploadFile(file, "digital-files"));
+      setUploadMessage("Digital file upload complete");
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Digital file upload failed");
+      setUploadMessage("");
     } finally {
       setUploading(false);
+      event.target.value = "";
+      setTimeout(() => {
+        setUploadProgress(0);
+        setUploadMessage("");
+      }, 1200);
     }
   }
 
@@ -84,6 +135,11 @@ export function ProductForm({ product }: ProductFormProps) {
           {state.error}
         </div>
       )}
+      {uploadError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {uploadError}
+        </div>
+      )}
       <input type="hidden" name="id" value={product?.id || ""} />
       <input type="hidden" name="imageUrls" value={JSON.stringify(imageUrls)} />
       <input type="hidden" name="fileUrl" value={fileUrl} />
@@ -91,7 +147,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <Input label="Product name" name="name" defaultValue={product?.name} required />
-        <Input label="Price" name="price" type="number" min="0" step="0.01" defaultValue={String(product?.price || "")} required />
+        <Input label="Price" name="price" type="number" min="0" step="0.01" defaultValue={String(product?.price || "")} required className="w-full" />
         <label className="space-y-1.5">
           <span className="text-sm font-medium text-slate-800">Type</span>
           <select
@@ -131,13 +187,22 @@ export function ProductForm({ product }: ProductFormProps) {
       </label>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="block rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5">
+        <label className="block rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5 transition hover:border-[#0f6b3a]">
           <span className="flex items-center gap-2 text-sm font-medium text-slate-800">
             <Upload className="h-4 w-4" />
             Upload images
           </span>
-          <input className="mt-3 block w-full text-sm" type="file" accept="image/*" multiple onChange={handleImageUpload} />
+          <input className="mt-3 block w-full text-sm" type="file" accept="image/*" multiple onChange={handleImageUpload} disabled={uploading} />
           <p className="mt-2 text-xs text-slate-500">{imageUrls.length} image(s) uploaded</p>
+          {imageUrls.length > 0 && (
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {imageUrls.map((url) => (
+                <div key={url} className="relative aspect-square overflow-hidden rounded-md border border-slate-200 bg-white">
+                  <Image src={url} alt="Uploaded product image" fill className="object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
         </label>
         {type === "DIGITAL" && (
           <label className="block rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5">
@@ -145,11 +210,25 @@ export function ProductForm({ product }: ProductFormProps) {
               <Upload className="h-4 w-4" />
               Upload digital file
             </span>
-            <input className="mt-3 block w-full text-sm" type="file" onChange={handleDigitalFileUpload} />
+            <input className="mt-3 block w-full text-sm" type="file" onChange={handleDigitalFileUpload} disabled={uploading} />
             <p className="mt-2 truncate text-xs text-slate-500">{fileUrl || "No file uploaded"}</p>
           </label>
         )}
       </div>
+      {(uploading || uploadProgress > 0 || uploadMessage) && (
+        <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-4">
+          <div className="flex items-center justify-between gap-3 text-sm font-medium text-[#0f6b3a]">
+            <span>{uploadMessage || "Uploading"}</span>
+            <span>{uploadProgress}%</span>
+          </div>
+          <div className="mt-3 h-2 rounded-full bg-white">
+            <div
+              className="h-full rounded-full bg-[#0f6b3a] transition-all duration-300"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -165,12 +244,12 @@ export function ProductForm({ product }: ProductFormProps) {
           </Button>
         </div>
         {variants.map((variant, index) => (
-          <div key={index} className="grid gap-3 rounded-lg border border-slate-200 p-3 md:grid-cols-[1fr_1fr_1fr_1fr_auto]">
+          <div key={index} className="grid gap-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_140px_140px_auto]">
             <Input label="Label" value={variant.label} onChange={(event) => setVariants((current) => current.map((entry, i) => i === index ? { ...entry, label: event.target.value } : entry))} />
             <Input label="Value" value={variant.value} onChange={(event) => setVariants((current) => current.map((entry, i) => i === index ? { ...entry, value: event.target.value } : entry))} />
             <Input label="Price +" type="number" min="0" value={String(variant.additionalPrice)} onChange={(event) => setVariants((current) => current.map((entry, i) => i === index ? { ...entry, additionalPrice: Number(event.target.value) } : entry))} />
             <Input label="Stock" type="number" min="0" value={String(variant.stock ?? "")} onChange={(event) => setVariants((current) => current.map((entry, i) => i === index ? { ...entry, stock: event.target.value ? Number(event.target.value) : null } : entry))} disabled={type === "DIGITAL"} />
-            <Button type="button" variant="ghost" size="icon" className="self-end" onClick={() => setVariants((current) => current.filter((_, i) => i !== index))}>
+            <Button type="button" variant="ghost" size="icon" className="self-end justify-self-start xl:justify-self-auto" onClick={() => setVariants((current) => current.filter((_, i) => i !== index))}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>

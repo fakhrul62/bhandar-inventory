@@ -6,6 +6,8 @@ import type { CartItem } from "@/types";
 
 type CartState = {
   items: CartItem[];
+  hydrated: boolean;
+  setHydrated: (hydrated: boolean) => void;
   addItem: (item: CartItem) => void;
   removeItem: (productId: string, variantId?: string) => void;
   setQuantity: (productId: string, quantity: number, variantId?: string) => void;
@@ -16,6 +18,8 @@ export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       items: [],
+      hydrated: false,
+      setHydrated: (hydrated) => set({ hydrated }),
       addItem: (item) =>
         set((state) => {
           const existing = state.items.find(
@@ -50,6 +54,12 @@ export const useCartStore = create<CartState>()(
         })),
       clear: () => set({ items: [] }),
     }),
-    { name: "bhandar-cart" },
+    {
+      name: "bhandar-cart",
+      partialize: (state) => ({ items: state.items }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHydrated(true);
+      },
+    },
   ),
 );
