@@ -1,6 +1,7 @@
 {
   "name": "bhandar-inventory",
   "version": "0.1.0",
+  "description": "Inventory, sales, and storefront management SaaS for small businesses in Bangladesh.",
   "private": true,
   "scripts": {
     "dev": "next dev",
