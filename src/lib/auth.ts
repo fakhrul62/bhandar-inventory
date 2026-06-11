@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
+
+function isUniqueConstraintError(error: unknown) {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
+}
 
 export async function getSessionUser() {
   const supabase = await createClient();
@@ -41,23 +46,50 @@ export async function ensureUserRecord() {
     create: { name: "FREE", price: 0, productLimit: 50 },
   });
 
-  const appUser = await prisma.user.upsert({
+  let appUser = await prisma.user.findUnique({
     where: { id: authUser.id },
-    update: {
-      email,
-      name,
-      avatarUrl: (authUser.user_metadata?.avatar_url as string | undefined) || null,
-    },
-    create: {
-      id: authUser.id,
-      email,
-      name,
-      avatarUrl: (authUser.user_metadata?.avatar_url as string | undefined) || null,
-      role: email === "ifakhrul23@gmail.com" ? "ADMIN" : "OWNER",
-      planId: freePlan.id,
-    },
     include: { plan: true },
   });
+
+  if (appUser) {
+    appUser = await prisma.user.update({
+      where: { id: authUser.id },
+      data: {
+        email,
+        name,
+        avatarUrl: (authUser.user_metadata?.avatar_url as string | undefined) || null,
+      },
+      include: { plan: true },
+    });
+  } else {
+    try {
+      appUser = await prisma.user.create({
+        data: {
+          id: authUser.id,
+          email,
+          name,
+          avatarUrl: (authUser.user_metadata?.avatar_url as string | undefined) || null,
+          role: email === "ifakhrul23@gmail.com" ? "ADMIN" : "OWNER",
+          planId: freePlan.id,
+        },
+        include: { plan: true },
+      });
+    } catch (error) {
+      if (!isUniqueConstraintError(error)) {
+        throw error;
+      }
+
+      appUser = await prisma.user.update({
+        where: { id: authUser.id },
+        data: {
+          email,
+          name,
+          avatarUrl: (authUser.user_metadata?.avatar_url as string | undefined) || null,
+        },
+        include: { plan: true },
+      });
+    }
+  }
 
   const existingStore = await prisma.store.findFirst({
     where: { userId: appUser.id },
@@ -73,14 +105,20 @@ export async function ensureUserRecord() {
       index += 1;
     }
 
-    await prisma.store.create({
-      data: {
-        userId: appUser.id,
-        name: `${name}'s Bhandar`,
-        slug,
-        description: "Inventory and storefront powered by Bhandar.",
-      },
-    });
+    try {
+      await prisma.store.create({
+        data: {
+          userId: appUser.id,
+          name: `${name}'s Bhandar`,
+          slug,
+          description: "Inventory and storefront powered by Bhandar.",
+        },
+      });
+    } catch (error) {
+      if (!isUniqueConstraintError(error)) {
+        throw error;
+      }
+    }
   }
 
   return appUser;
