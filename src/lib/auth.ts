@@ -112,6 +112,7 @@ export async function ensureUserRecord() {
           name: `${name}'s Bhandar`,
           slug,
           description: "Inventory and storefront powered by Bhandar.",
+          isPublic: true,
         },
       });
     } catch (error) {
