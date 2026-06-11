@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import Image from "next/image";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Loader2, Package, ShoppingCart, Trash2, X } from "lucide-react";
 import { createCheckoutAction } from "@/actions/orders";
@@ -9,6 +8,7 @@ import { useCartStore } from "@/stores/cart";
 import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 type Product = {
   id: string;
@@ -100,11 +100,12 @@ export function StorefrontClient({ storeId, products }: { storeId: string; produ
                     }}
                   >
                     <div className="relative aspect-[4/3] bg-slate-100">
-                    {product.imageUrls[0] ? (
-                      <Image src={product.imageUrls[0]} alt={product.name} fill className="object-cover" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-sm text-slate-400">No image</div>
-                    )}
+                      <SafeImage
+                        src={product.imageUrls[0]}
+                        alt={product.name}
+                        className="h-full w-full object-cover"
+                        fallback={<div className="flex h-full items-center justify-center text-sm text-slate-400">No image</div>}
+                      />
                     </div>
                   </button>
                   <div className="p-4">
@@ -202,13 +203,16 @@ export function StorefrontClient({ storeId, products }: { storeId: string; produ
             {selectedProduct && (
               <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
                 <div className="relative min-h-72 bg-slate-100 lg:min-h-[520px]">
-                  {selectedProduct.imageUrls[0] ? (
-                    <Image src={selectedProduct.imageUrls[0]} alt={selectedProduct.name} fill className="object-cover" />
-                  ) : (
-                    <div className="flex h-full min-h-72 items-center justify-center text-slate-400">
-                      <Package className="h-12 w-12" />
-                    </div>
-                  )}
+                  <SafeImage
+                    src={selectedProduct.imageUrls[0]}
+                    alt={selectedProduct.name}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    fallback={
+                      <div className="flex h-full min-h-72 items-center justify-center text-slate-400">
+                        <Package className="h-12 w-12" />
+                      </div>
+                    }
+                  />
                 </div>
                 <div className="p-6 sm:p-8">
                   <div className="flex items-start justify-between gap-4">

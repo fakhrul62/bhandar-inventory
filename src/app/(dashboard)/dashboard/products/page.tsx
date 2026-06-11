@@ -7,6 +7,7 @@ import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 export default async function ProductsPage({
   searchParams,
@@ -108,8 +109,20 @@ export default async function ProductsPage({
                 {products.map((product) => (
                   <tr key={product.id}>
                     <td className="px-5 py-4">
-                      <p className="font-medium text-slate-950">{product.name}</p>
-                      <p className="text-slate-500">{product.variants.length} variants</p>
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100 text-xs text-slate-400">
+                          <SafeImage
+                            src={product.imageUrls[0]}
+                            alt={product.name}
+                            className="h-full w-full object-cover"
+                            fallback={<Package className="h-5 w-5" />}
+                          />
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-950">{product.name}</p>
+                          <p className="text-slate-500">{product.variants.length} variants</p>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-5 py-4">{product.type}</td>
                     <td className="px-5 py-4">{formatMoney(Number(product.price), product.currency)}</td>

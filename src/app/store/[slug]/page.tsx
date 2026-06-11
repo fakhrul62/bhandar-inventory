@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { StorefrontClient } from "@/components/store/StorefrontClient";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 export default async function PublicStorePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -24,7 +24,12 @@ export default async function PublicStorePage({ params }: { params: Promise<{ sl
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#0f6b3a] text-2xl font-semibold text-white">
-              {store.logoUrl ? <Image src={store.logoUrl} alt={store.name} fill className="object-cover" /> : store.name.slice(0, 2).toUpperCase()}
+              <SafeImage
+                src={store.logoUrl}
+                alt={store.name}
+                className="h-full w-full object-cover"
+                fallback={store.name.slice(0, 2).toUpperCase()}
+              />
             </div>
             <div>
               <p className="font-[var(--font-hind-siliguri)] text-sm text-[#0f6b3a]">ভান্ডার স্টোর</p>

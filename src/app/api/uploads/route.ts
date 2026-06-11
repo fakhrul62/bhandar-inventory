@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { getBaseUrl } from "@/lib/utils";
 
 const allowedBuckets = new Set(["product-images", "digital-files", "store-logos", "avatars"]);
 
@@ -58,6 +59,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: data.signedUrl, path });
   }
 
-  const { data } = admin.storage.from(bucket).getPublicUrl(path);
-  return NextResponse.json({ url: data.publicUrl, path });
+  const mediaPath = path.split("/").map(encodeURIComponent).join("/");
+  return NextResponse.json({ url: `${getBaseUrl()}/api/media/${bucket}/${mediaPath}`, path });
 }

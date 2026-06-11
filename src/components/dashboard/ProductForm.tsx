@@ -1,11 +1,11 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import Image from "next/image";
 import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { saveProductAction, type ActionState } from "@/actions/products";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 type ProductFormProps = {
   product?: {
@@ -198,7 +198,12 @@ export function ProductForm({ product }: ProductFormProps) {
             <div className="mt-3 grid grid-cols-3 gap-2">
               {imageUrls.map((url) => (
                 <div key={url} className="relative aspect-square overflow-hidden rounded-md border border-slate-200 bg-white">
-                  <Image src={url} alt="Uploaded product image" fill className="object-cover" />
+                  <SafeImage
+                    src={url}
+                    alt="Uploaded product image"
+                    className="h-full w-full object-cover"
+                    fallback={<div className="flex h-full items-center justify-center px-2 text-center text-xs text-slate-400">Image unavailable</div>}
+                  />
                 </div>
               ))}
             </div>
