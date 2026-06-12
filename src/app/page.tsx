@@ -86,7 +86,7 @@ export default async function Home() {
       </section>
 
       <section className="border-y border-[#E2E8F0] bg-[#F9FAFB] py-6">
-        <div className="mx-auto grid max-w-[1200px] gap-4 px-6 sm:grid-cols-3 lg:px-20">
+        <div className="mx-auto grid max-w-[1440px] gap-4 px-6 sm:grid-cols-3 lg:px-20">
           <Snapshot label="Public stores" value={stores.length} />
           <Snapshot label="Products tracked" value={productCount} />
           <Snapshot label="Orders counted" value={orderCount} />
@@ -94,7 +94,7 @@ export default async function Home() {
       </section>
 
       <SectionIntro eyebrow="Live on Bhandar" title="Stores growing with us right now" text="These are real public stores from the Bhandar database." />
-      <section className="mx-auto max-w-[1200px] px-6 pb-[72px] lg:px-20 lg:pb-[120px]">
+      <section className="mx-auto max-w-[1440px] px-6 pb-[72px] lg:px-20 lg:pb-[120px]">
         {stores.length > 0 ? (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {stores.map((store, index) => (
@@ -126,7 +126,7 @@ export default async function Home() {
       </section>
 
       <section className="border-y border-[#E2E8F0] bg-white">
-        <div className="mx-auto max-w-[1200px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
+        <div className="mx-auto max-w-[1440px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
           <div className="reveal mb-12 max-w-3xl">
             <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">What Bhandar does</p>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#0F172A] lg:text-[2rem]">Everything your business needs. Nothing it does not.</h2>
@@ -139,7 +139,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1200px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
+      <section className="mx-auto max-w-[1440px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
         <div className="reveal max-w-2xl">
           <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Getting started</p>
           <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#0F172A] lg:text-[2rem]">Up and running in minutes.</h2>
@@ -153,7 +153,7 @@ export default async function Home() {
       </section>
 
       <section className="border-y border-[#E2E8F0] bg-[#F9FAFB]">
-        <div className="mx-auto max-w-[1200px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
+        <div className="mx-auto max-w-[1440px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
           <div className="reveal text-center">
             <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Pricing</p>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#0F172A] lg:text-[2rem]">Simple pricing from the live plan table.</h2>
@@ -172,7 +172,7 @@ export default async function Home() {
       </section>
 
       <section className="bg-[#1A56DB]">
-        <div className="mx-auto max-w-[1200px] px-6 py-[72px] text-center lg:px-20 lg:py-[120px]">
+        <div className="mx-auto max-w-[1440px] px-6 py-[72px] text-center lg:px-20 lg:py-[120px]">
           <h2 className="text-4xl font-extrabold tracking-tight text-white lg:text-[2.5rem]">Start managing smarter today.</h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/80">Bring inventory, orders, and storefront operations into one system your team can trust.</p>
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
@@ -312,7 +312,7 @@ function StatCard({ value, label, className }: { value: string; label: string; c
 
 function SectionIntro({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
   return (
-    <section className="mx-auto max-w-[1200px] px-6 pt-[72px] lg:px-20 lg:pt-[120px]">
+    <section className="mx-auto max-w-[1440px] px-6 pt-[72px] lg:px-20 lg:pt-[120px]">
       <div className="reveal max-w-2xl">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">{eyebrow}</p>
         <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#0F172A] lg:text-[2rem]">{title}</h2>
@@ -375,7 +375,7 @@ function PlanCard({ name, price, limit, popular = false }: { name: string; price
 function Footer() {
   return (
     <footer className="border-t border-[#E2E8F0] bg-white">
-      <div className="mx-auto grid max-w-[1200px] gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:px-20">
+      <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:px-20">
         <div>
           <div className="flex items-center gap-3">
             <span className="grid h-9 w-9 grid-cols-2 gap-1 rounded-lg border border-[#1A56DB]/20 bg-white p-2">
@@ -396,7 +396,7 @@ function Footer() {
         <FooterColumn title="Storefront" links={[["Browse stores", "/stores"], ["Create store", "/register"]]} />
       </div>
       <div className="border-t border-[#E2E8F0]">
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-3 px-6 py-5 text-sm text-[#64748B] sm:flex-row sm:items-center sm:justify-between lg:px-20">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-3 px-6 py-5 text-sm text-[#64748B] sm:flex-row sm:items-center sm:justify-between lg:px-20">
           <p>© 2026 Bhandar. All rights reserved.</p>
           <p>Made in Bangladesh 🇧🇩</p>
         </div>

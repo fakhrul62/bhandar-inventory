@@ -27,7 +27,7 @@ export function MarketingHeader() {
         scrolled ? "bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : "bg-[#F9FAFB]/95"
       }`}
     >
-      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 lg:px-20">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-4 lg:px-20">
         <Link href="/" className="flex items-center gap-3" aria-label="Bhandar home">
           <span className="grid h-9 w-9 grid-cols-2 gap-1 rounded-lg border border-[#1A56DB]/20 bg-white p-2">
             <span className="rounded-full bg-[#1A56DB]" />

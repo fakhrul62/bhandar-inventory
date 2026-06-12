@@ -24,7 +24,7 @@ export default async function StoresPage() {
   return (
     <main className="min-h-screen bg-[#F9FAFB] text-[#0F172A] [font-feature-settings:'ss01','cv11']">
       <MarketingHeader />
-      <section className="mx-auto max-w-[1200px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
+      <section className="mx-auto max-w-[1440px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Live on Bhandar</p>
         <h1 className="mt-5 max-w-4xl text-[clamp(2.8rem,6vw,5.5rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">
           Public stores using Bhandar.
@@ -34,7 +34,7 @@ export default async function StoresPage() {
         </p>
       </section>
 
-      <section className="mx-auto max-w-[1200px] px-6 pb-[72px] lg:px-20 lg:pb-[120px]">
+      <section className="mx-auto max-w-[1440px] px-6 pb-[72px] lg:px-20 lg:pb-[120px]">
         {stores.length > 0 ? (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {stores.map((store) => (

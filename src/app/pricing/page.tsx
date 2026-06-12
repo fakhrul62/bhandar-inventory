@@ -11,7 +11,7 @@ export default async function PricingPage() {
   return (
     <main className="min-h-screen bg-[#F9FAFB] text-[#0F172A] [font-feature-settings:'ss01','cv11']">
       <MarketingHeader />
-      <section className="mx-auto max-w-[1200px] px-6 py-[72px] text-center lg:px-20 lg:py-[120px]">
+      <section className="mx-auto max-w-[1440px] px-6 py-[72px] text-center lg:px-20 lg:py-[120px]">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Pricing</p>
         <h1 className="mx-auto mt-5 max-w-4xl text-[clamp(2.8rem,6vw,5.5rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">
           Simple plans from the live product.
@@ -21,7 +21,7 @@ export default async function PricingPage() {
         </p>
       </section>
 
-      <section className="mx-auto max-w-[1200px] px-6 pb-[72px] lg:px-20 lg:pb-[120px]">
+      <section className="mx-auto max-w-[1440px] px-6 pb-[72px] lg:px-20 lg:pb-[120px]">
         <div className="grid gap-6 lg:grid-cols-3">
           {plans.map((plan) => (
             <article key={plan.id} className={`rounded-xl bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] ${plan.id === proPlan?.id ? "border-2 border-[#1A56DB]" : "border border-[#E2E8F0]"}`}>

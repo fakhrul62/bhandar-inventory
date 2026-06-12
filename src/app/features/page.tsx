@@ -13,7 +13,7 @@ export default async function FeaturesPage() {
   return (
     <main className="min-h-screen bg-[#F9FAFB] text-[#0F172A] [font-feature-settings:'ss01','cv11']">
       <MarketingHeader />
-      <section className="mx-auto max-w-[1200px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
+      <section className="mx-auto max-w-[1440px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Features</p>
         <h1 className="mt-5 max-w-4xl text-[clamp(2.8rem,6vw,5.5rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">
           The operating system for inventory and storefronts.
@@ -24,14 +24,14 @@ export default async function FeaturesPage() {
       </section>
 
       <section className="border-y border-[#E2E8F0] bg-white">
-        <div className="mx-auto grid max-w-[1200px] gap-5 px-6 py-[72px] md:grid-cols-3 lg:px-20 lg:py-[120px]">
+        <div className="mx-auto grid max-w-[1440px] gap-5 px-6 py-[72px] md:grid-cols-3 lg:px-20 lg:py-[120px]">
           <Feature icon={Package} title="Inventory Tracking" stat={`${products} products`} text="Track physical and digital products, stock counts, variants, images, and publish state from the dashboard." />
           <Feature icon={Store} title="Storefront Manager" stat={`${stores} public stores`} text="Each public store gets a working storefront URL with product discovery, cart, and checkout." />
           <Feature icon={BarChart3} title="Sales Analytics" stat={`${orders} orders`} text="Orders are counted with buyer details, payment method, items, totals, and delivery information." />
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1200px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
+      <section className="mx-auto max-w-[1440px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
         <div className="rounded-xl border border-[#E2E8F0] bg-[#1A56DB] p-8 text-white lg:p-12">
           <h2 className="text-3xl font-extrabold tracking-tight">Ready to see the dashboard?</h2>
           <p className="mt-3 max-w-2xl text-white/80">Create an account, add products, and publish a storefront when you are ready.</p>
