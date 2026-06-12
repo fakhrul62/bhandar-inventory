@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BarChart3, Package, Store } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { MarketingHeader } from "@/components/home/MarketingHeader";
+import { MarketingHeaderServer } from "@/components/home/MarketingHeaderServer";
 
 export default async function FeaturesPage() {
   const [stores, products, orders] = await Promise.all([
@@ -12,7 +12,7 @@ export default async function FeaturesPage() {
 
   return (
     <main className="min-h-screen bg-[#F9FAFB] text-[#0F172A] [font-feature-settings:'ss01','cv11']">
-      <MarketingHeader />
+      <MarketingHeaderServer />
       <section className="mx-auto max-w-[1440px] px-6 py-[72px] lg:px-20 lg:py-[120px]">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Features</p>
         <h1 className="mt-5 max-w-4xl text-[clamp(2.8rem,6vw,5.5rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">

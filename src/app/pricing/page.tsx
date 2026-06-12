@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/utils";
-import { MarketingHeader } from "@/components/home/MarketingHeader";
+import { MarketingHeaderServer } from "@/components/home/MarketingHeaderServer";
 
 export default async function PricingPage() {
   const plans = await prisma.plan.findMany({ orderBy: { price: "asc" } });
@@ -10,7 +10,7 @@ export default async function PricingPage() {
 
   return (
     <main className="min-h-screen bg-[#F9FAFB] text-[#0F172A] [font-feature-settings:'ss01','cv11']">
-      <MarketingHeader />
+      <MarketingHeaderServer />
       <section className="mx-auto max-w-[1440px] px-6 py-[72px] text-center lg:px-20 lg:py-[120px]">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Pricing</p>
         <h1 className="mx-auto mt-5 max-w-4xl text-[clamp(2.8rem,6vw,5.5rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">

@@ -14,7 +14,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/utils";
 import { SafeImage } from "@/components/ui/SafeImage";
-import { MarketingHeader } from "@/components/home/MarketingHeader";
+import { MarketingHeaderServer } from "@/components/home/MarketingHeaderServer";
 
 export default async function Home() {
   const [stores, plans, storeCount, productCount, orderCount, recentProducts] = await Promise.all([
@@ -52,7 +52,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-[#F9FAFB] text-[#0F172A] [font-feature-settings:'ss01','cv11']">
       <HomeStyles />
-      <MarketingHeader />
+      <MarketingHeaderServer />
 
       <section className="mx-auto grid min-h-[calc(100svh-73px)] max-w-[1440px] items-center gap-10 px-6 py-12 sm:py-14 lg:grid-cols-[1.04fr_0.96fr] lg:px-16 lg:py-14 xl:px-20 xl:py-16">
         <div className="reveal">
