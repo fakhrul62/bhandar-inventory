@@ -66,7 +66,8 @@ export function Header({
             Bhandar workspace
           </p>
           <h1 className="text-base font-semibold leading-tight tracking-tight text-slate-950 sm:text-lg lg:mt-1 lg:truncate lg:text-2xl">
-            {name ? `Welcome, ${name}` : "Welcome"}
+            <span className="lg:hidden">Dashboard</span>
+            <span className="hidden lg:inline">{name ? `Welcome, ${name}` : "Welcome"}</span>
           </h1>
         </div>
         <div className="flex shrink-0 items-center gap-1.5 lg:gap-2">
@@ -198,13 +199,13 @@ export function Header({
         </div>
       </div>
 
-      <nav className="grid grid-cols-3 gap-2 border-t border-slate-200 px-3 py-2 sm:flex sm:overflow-x-auto sm:[scrollbar-width:none] lg:hidden" aria-label="Quick dashboard navigation">
+      <nav className="flex gap-2 overflow-x-auto border-t border-slate-200 px-3 py-2 [scrollbar-width:none] lg:hidden" aria-label="Quick dashboard navigation">
         {items.slice(0, 5).map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "min-w-0 shrink-0 rounded-lg px-2 py-2 text-center text-sm font-medium transition sm:px-3",
+              "shrink-0 rounded-lg px-4 py-2 text-center text-sm font-medium transition",
               currentPath === item.href ||
                 (item.href !== "/dashboard" && currentPath?.startsWith(item.href))
                 ? "bg-[#0f6b3a] text-white"
