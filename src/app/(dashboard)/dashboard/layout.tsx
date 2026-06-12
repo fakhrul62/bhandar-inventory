@@ -13,7 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="flex min-h-screen bg-slate-50 text-slate-950">
       <Sidebar currentPath={pathname} isAdmin={user.role === "ADMIN"} />
       <div className="min-w-0 flex-1">
-        <Header name={user.name} storeSlug={store?.slug} currentPath={pathname} />
+        <Header name={user.name} storeSlug={store?.slug} currentPath={pathname} isAdmin={user.role === "ADMIN"} />
         <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
