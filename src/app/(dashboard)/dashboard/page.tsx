@@ -32,37 +32,37 @@ export default async function DashboardPage() {
     .reduce((sum, order) => sum + Number(order.totalAmount), 0);
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-lg border border-emerald-900/10 bg-[#0f6b3a] p-6 text-white shadow-[0_24px_80px_rgba(15,107,58,0.16)] sm:p-8">
+    <div className="min-w-0 space-y-5 sm:space-y-6">
+      <section className="min-w-0 overflow-hidden rounded-lg border border-emerald-900/10 bg-[#0f6b3a] p-4 text-white shadow-[0_24px_80px_rgba(15,107,58,0.16)] sm:p-8">
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
-          <div>
+          <div className="min-w-0">
             <p className="font-[var(--font-hind-siliguri)] text-sm text-emerald-100">ভান্ডার ড্যাশবোর্ড</p>
-            <h1 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight sm:text-5xl">
+            <h1 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight sm:text-5xl">
               Run your inventory, sales, and storefront from one place.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-emerald-50">
               Track stock, publish products, collect orders, and share your store link with customers.
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild className="bg-[#f5a623] text-slate-950 hover:bg-[#e1961e]">
+          <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2 lg:flex lg:flex-wrap">
+            <Button asChild className="w-full bg-[#f5a623] text-slate-950 hover:bg-[#e1961e] sm:w-auto">
               <Link href="/dashboard/products/new">Add product</Link>
             </Button>
-            <Button asChild variant="outline" className="border-white/30 bg-white/10 text-white hover:bg-white/15">
+            <Button asChild variant="outline" className="w-full border-white/30 bg-white/10 text-white hover:bg-white/15 sm:w-auto">
               <Link href={`/store/${store?.slug || ""}`} target="_blank">View store</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Products" value={`${totalProducts}/${user.plan.productLimit}`} helper={`${user.plan.name} plan usage`} icon={Package} />
         <StatCard label="Orders" value={String(orders.length)} helper="Recent customer orders" icon={ShoppingBag} />
         <StatCard label="Revenue" value={`${formatMoney(revenueBdt, "BDT")} / ${formatMoney(revenueUsd, "USD")}`} helper="Paid orders only" icon={Wallet} />
         <StatCard label="Low stock" value={String(lowStock)} helper="Physical products at 5 or less" icon={AlertTriangle} />
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
+      <section className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)] lg:gap-6">
         <Card className="p-0">
           <div className="border-b border-slate-200 p-5">
             <h2 className="text-lg font-semibold">Recent orders</h2>
@@ -78,7 +78,37 @@ export default async function DashboardPage() {
               </Button>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="grid gap-3 p-4 sm:hidden">
+              {orders.map((order) => (
+                <article key={order.id} className="rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-slate-950">{order.buyerName}</p>
+                      <p className="mt-1 truncate text-sm text-slate-500">{order.buyerEmail}</p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                      {order.status}
+                    </span>
+                  </div>
+                  <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Items</p>
+                      <p className="mt-1 font-medium text-slate-950">{order.items.length}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Total</p>
+                      <p className="mt-1 font-medium text-slate-950">{formatMoney(Number(order.totalAmount), order.currency)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Date</p>
+                      <p className="mt-1 font-medium text-slate-950">{order.createdAt.toLocaleDateString("en-BD", { month: "short", day: "numeric" })}</p>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto sm:block">
               <table className="w-full min-w-[680px] text-left text-sm">
                 <thead className="bg-slate-50 text-xs uppercase tracking-[0.14em] text-slate-500">
                   <tr>
@@ -105,20 +135,21 @@ export default async function DashboardPage() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </Card>
 
-        <Card>
+        <Card className="self-start p-4 sm:p-6">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-50 text-[#f5a623]">
               <Store className="h-5 w-5" />
             </span>
-            <div>
+            <div className="min-w-0">
               <h2 className="font-semibold">Quick actions</h2>
               <p className="text-sm text-slate-500">Common daily tasks</p>
             </div>
           </div>
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 grid gap-3">
             <Button asChild className="w-full bg-[#0f6b3a] hover:bg-[#0b542d]">
               <Link href="/dashboard/products/new">Add a product</Link>
             </Button>

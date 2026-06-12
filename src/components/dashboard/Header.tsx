@@ -60,27 +60,26 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-slate-50/95 backdrop-blur-xl">
-      <div className="flex min-h-20 items-center justify-between gap-4 px-4 py-4 sm:px-6">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0f6b3a]">
+      <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-3 sm:min-h-20 sm:px-6 sm:py-4">
+        <div className="min-w-0 flex-1">
+          <p className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#0f6b3a] sm:block">
             Bhandar workspace
           </p>
-          <h1 className="mt-1 truncate text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl">
+          <h1 className="truncate text-lg font-semibold tracking-tight text-slate-950 sm:mt-1 sm:text-2xl">
             {name ? `Welcome, ${name}` : "Welcome"}
           </h1>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <Button asChild variant="outline" className="hidden sm:inline-flex">
             <Link href={`/store/${storeSlug || ""}`} target="_blank">
               <Store className="h-4 w-4" />
               View store
             </Link>
           </Button>
-          <Button asChild className="bg-[#0f6b3a] hover:bg-[#0b542d]">
-            <Link href="/dashboard/products/new">
+          <Button asChild className="h-10 w-10 px-0 bg-[#0f6b3a] hover:bg-[#0b542d] sm:w-auto sm:px-4">
+            <Link href="/dashboard/products/new" aria-label="Add product">
               <Plus className="h-4 w-4" />
               <span className="hidden sm:inline">Add product</span>
-              <span className="sm:hidden">Add</span>
             </Link>
           </Button>
           <div className="relative">
@@ -101,7 +100,7 @@ export function Header({
             </Button>
 
             {notificationsOpen && (
-              <div className="absolute right-0 top-12 z-50 w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
+              <div className="fixed left-3 right-3 top-[72px] z-50 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-12 sm:w-[calc(100vw-2rem)] sm:max-w-sm">
                 <div className="flex items-center justify-between gap-3 border-b border-slate-200 p-4">
                   <div>
                     <h2 className="font-semibold text-slate-950">Notifications</h2>
@@ -109,7 +108,7 @@ export function Header({
                   </div>
                   {unreadCount > 0 && (
                     <form action={markAllNotificationsReadAction}>
-                      <Button size="sm" variant="ghost" onClick={() => setNotificationsOpen(false)}>
+                      <Button size="sm" variant="ghost" className="whitespace-nowrap" onClick={() => setNotificationsOpen(false)}>
                         Mark all read
                       </Button>
                     </form>
@@ -199,7 +198,7 @@ export function Header({
         </div>
       </div>
 
-      <nav className="flex gap-2 overflow-x-auto border-t border-slate-200 px-4 py-2 lg:hidden" aria-label="Quick dashboard navigation">
+      <nav className="flex gap-2 overflow-x-auto border-t border-slate-200 px-3 py-2 [scrollbar-width:none] lg:hidden" aria-label="Quick dashboard navigation">
         {items.slice(0, 5).map((item) => (
           <Link
             key={item.href}
@@ -218,9 +217,9 @@ export function Header({
       </nav>
 
       {menuOpen && (
-        <div className="fixed inset-0 top-[121px] z-50 bg-slate-950/40 lg:hidden" onClick={() => setMenuOpen(false)}>
+        <div className="fixed inset-x-0 bottom-0 top-[113px] z-50 bg-slate-950/40 sm:top-[121px] lg:hidden" onClick={() => setMenuOpen(false)}>
           <div
-            className="ml-auto h-[calc(100vh-121px)] w-full max-w-sm border-l border-slate-200 bg-white p-4 shadow-2xl"
+            className="ml-auto h-full w-full overflow-y-auto border-l border-slate-200 bg-white p-4 shadow-2xl sm:max-w-sm"
             onClick={(event) => event.stopPropagation()}
           >
             <nav className="grid gap-1" aria-label="Mobile dashboard menu">

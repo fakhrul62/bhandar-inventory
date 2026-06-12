@@ -17,7 +17,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-950">
       <Sidebar currentPath={pathname} isAdmin={user.role === "ADMIN"} />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 overflow-x-hidden">
         <Header
           name={user.name}
           storeSlug={store?.slug}
@@ -32,7 +32,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             createdAt: notification.createdAt.toISOString(),
           }))}
         />
-        <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="mx-auto w-full max-w-7xl min-w-0 p-3 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );
