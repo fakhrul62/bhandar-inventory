@@ -29,6 +29,11 @@ const billingMessages: Record<string, { tone: "success" | "warning" | "error"; t
     title: "Subscription price unavailable",
     text: "Stripe could not prepare this plan price. Check the Stripe account currency settings and try again.",
   },
+  "checkout-unavailable": {
+    tone: "error",
+    title: "Checkout unavailable",
+    text: "Stripe could not start checkout for this plan. Check that card payments are enabled in Stripe and try again.",
+  },
   "invalid-plan": {
     tone: "error",
     title: "Invalid plan",

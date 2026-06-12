@@ -6,6 +6,10 @@ import { ensureUserRecord } from "@/lib/auth";
 import { billingReturnUrl, hasStripeSecretKey, resolvePlanPriceId, stripe } from "@/lib/stripe";
 import { getBaseUrl } from "@/lib/utils";
 
+function isStripeInvalidRequest(error: unknown) {
+  return typeof error === "object" && error !== null && "type" in error && error.type === "StripeInvalidRequestError";
+}
+
 export async function openBillingPortalAction() {
   if (!hasStripeSecretKey()) {
     redirect("/dashboard/billing?error=stripe-not-configured");
@@ -74,20 +78,50 @@ export async function startSubscriptionCheckoutAction(formData: FormData) {
   try {
     priceId = await resolvePlanPriceId(planName, plan.price);
   } catch {
-    redirect("/dashboard/billing?error=price-unavailable");
+    try {
+      priceId = await resolvePlanPriceId(planName, plan.price, "usd");
+    } catch {
+      redirect("/dashboard/billing?error=price-unavailable");
+    }
   }
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    customer: stripeCustomerId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${getBaseUrl()}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${getBaseUrl()}/dashboard/billing?cancelled=1`,
-    metadata: { userId: user.id, planName },
-    subscription_data: {
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer: stripeCustomerId,
+      payment_method_types: ["card"],
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${getBaseUrl()}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${getBaseUrl()}/dashboard/billing?cancelled=1`,
       metadata: { userId: user.id, planName },
-    },
-  });
+      subscription_data: {
+        metadata: { userId: user.id, planName },
+      },
+    });
+  } catch (error) {
+    if (!isStripeInvalidRequest(error)) {
+      redirect("/dashboard/billing?error=checkout-unavailable");
+    }
+
+    try {
+      const fallbackPriceId = await resolvePlanPriceId(planName, plan.price, "usd");
+      session = await stripe.checkout.sessions.create({
+        mode: "subscription",
+        customer: stripeCustomerId,
+        payment_method_types: ["card"],
+        line_items: [{ price: fallbackPriceId, quantity: 1 }],
+        success_url: `${getBaseUrl()}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${getBaseUrl()}/dashboard/billing?cancelled=1`,
+        metadata: { userId: user.id, planName, currencyFallback: "USD" },
+        subscription_data: {
+          metadata: { userId: user.id, planName, currencyFallback: "USD" },
+        },
+      });
+    } catch {
+      redirect("/dashboard/billing?error=checkout-unavailable");
+    }
+  }
 
   redirect(session.url || "/dashboard/billing");
 }

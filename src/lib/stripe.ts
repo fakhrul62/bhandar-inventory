@@ -66,32 +66,21 @@ async function createPlanPrice(plan: PaidPlanName, amount: number, currency: "bd
   });
 }
 
-export async function resolvePlanPriceId(plan: PaidPlanName, monthlyPriceBdt: number) {
+export async function resolvePlanPriceId(plan: PaidPlanName, monthlyPriceBdt: number, currency: "bdt" | "usd" = "bdt") {
   const configuredPriceId = getConfiguredPlanPriceId(plan);
-  if (configuredPriceId) {
+  if (configuredPriceId && currency === "bdt") {
     return configuredPriceId;
   }
 
-  const bdtLookupKey = planLookupKey(plan, "bdt");
-  const existingBdtPrice = await findPriceByLookupKey(bdtLookupKey);
-  if (existingBdtPrice) {
-    return existingBdtPrice.id;
+  const lookupKey = planLookupKey(plan, currency);
+  const existingPrice = await findPriceByLookupKey(lookupKey);
+  if (existingPrice) {
+    return existingPrice.id;
   }
 
-  try {
-    const price = await createPlanPrice(plan, monthlyPriceBdt, "bdt");
-    return price.id;
-  } catch {
-    const usdLookupKey = planLookupKey(plan, "usd");
-    const existingUsdPrice = await findPriceByLookupKey(usdLookupKey);
-    if (existingUsdPrice) {
-      return existingUsdPrice.id;
-    }
-
-    const usdFallbackAmount = plan === "PRO" ? 499 : 999;
-    const price = await createPlanPrice(plan, usdFallbackAmount, "usd");
-    return price.id;
-  }
+  const amount = currency === "bdt" ? monthlyPriceBdt : plan === "PRO" ? 499 : 999;
+  const price = await createPlanPrice(plan, amount, currency);
+  return price.id;
 }
 
 export function billingReturnUrl() {
