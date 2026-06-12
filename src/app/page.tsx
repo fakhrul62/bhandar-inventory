@@ -54,13 +54,13 @@ export default async function Home() {
       <HomeStyles />
       <MarketingHeader />
 
-      <section className="mx-auto grid max-w-[1200px] items-center gap-12 px-6 py-[72px] lg:grid-cols-[1.1fr_0.9fr] lg:px-20 lg:py-[120px]">
+      <section className="mx-auto grid min-h-[calc(100svh-73px)] max-w-[1440px] items-center gap-10 px-6 py-12 sm:py-14 lg:grid-cols-[1.04fr_0.96fr] lg:px-16 lg:py-14 xl:px-20 xl:py-16">
         <div className="reveal">
           <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Inventory + Storefront Platform</p>
-          <h1 className="mt-6 max-w-4xl text-[clamp(2.8rem,6vw,5.5rem)] font-extrabold leading-[0.98] tracking-[-0.03em] text-[#0F172A]">
+          <h1 className="mt-6 max-w-5xl text-[clamp(2.6rem,5vw,4.9rem)] font-extrabold leading-[1] tracking-[-0.03em] text-[#0F172A]">
             Every product tracked. Every <span className="relative inline-block text-[#1A56DB]">sale<span className="hero-underline absolute -bottom-2 left-0 h-1 w-full rounded-full bg-[#1A56DB]" /></span> counted.
           </h1>
-          <p className="mt-8 max-w-2xl text-[1.125rem] leading-8 text-[#64748B]">
+          <p className="mt-7 max-w-2xl text-[1.075rem] leading-8 text-[#64748B]">
             Bhandar gives growing businesses a unified command center for inventory, orders, and public storefronts.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -78,7 +78,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="reveal relative" style={{ transitionDelay: "80ms" }}>
+        <div className="reveal relative mx-auto w-full max-w-[680px] xl:max-w-[740px]" style={{ transitionDelay: "80ms" }}>
           <DashboardMockup products={recentProducts} orderCount={orderCount} />
           <StatCard className="-right-2 top-8 sm:-right-7" value={String(storeCount)} label="stores" />
           <StatCard className="-left-2 bottom-8 sm:-left-7" value={String(productCount)} label="products" />
@@ -232,15 +232,15 @@ function DashboardMockup({
         <span className="h-2.5 w-2.5 rounded-full bg-[#E2E8F0]" />
         <span className="ml-3 text-xs font-semibold text-[#64748B]">dashboard.bhandar.app</span>
       </div>
-      <div className="grid min-h-[420px] grid-cols-[70px_1fr] overflow-hidden rounded-lg sm:grid-cols-[82px_1fr]">
+      <div className="grid min-h-[340px] grid-cols-[64px_1fr] overflow-hidden rounded-lg sm:min-h-[370px] sm:grid-cols-[78px_1fr] xl:min-h-[410px] xl:grid-cols-[82px_1fr]">
         <aside className="border-r border-[#E2E8F0] bg-[#F9FAFB] p-3">
           {[Package, Store, BarChart3, Bell].map((Icon, index) => (
-            <div key={index} className={`mb-3 flex h-10 w-10 items-center justify-center rounded-lg ${index === 0 ? "bg-[#EEF3FD] text-[#1A56DB]" : "text-[#64748B]"}`}>
+            <div key={index} className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg sm:h-10 sm:w-10 ${index === 0 ? "bg-[#EEF3FD] text-[#1A56DB]" : "text-[#64748B]"}`}>
               <Icon className="h-5 w-5" strokeWidth={1.5} />
             </div>
           ))}
         </aside>
-        <div className="min-w-0 p-4 sm:p-5">
+        <div className="min-w-0 p-4 xl:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Inventory</p>
@@ -248,7 +248,7 @@ function DashboardMockup({
             </div>
             <div className="w-fit rounded-lg border border-[#E2E8F0] px-3 py-2 text-xs font-semibold text-[#64748B]">{orderCount} orders</div>
           </div>
-          <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_150px]">
+          <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_150px]">
             <div className="rounded-xl border border-[#E2E8F0] bg-white">
               {rows.length ? (
                 rows.map((product) => (
@@ -266,7 +266,7 @@ function DashboardMockup({
             </div>
             <div className="rounded-xl border border-[#E2E8F0] bg-[#EEF3FD] p-4">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#1A56DB]">Product mix</p>
-              <div className="mt-8 flex h-32 items-end gap-2">
+              <div className="mt-6 flex h-24 items-end gap-2 xl:h-32">
                 {[
                   rows.filter((item) => item.type === "PHYSICAL").length,
                   rows.filter((item) => item.type === "DIGITAL").length,
