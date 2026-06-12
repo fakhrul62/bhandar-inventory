@@ -3,10 +3,14 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ensureUserRecord } from "@/lib/auth";
-import { billingReturnUrl, getPlanPriceId, stripe } from "@/lib/stripe";
+import { billingReturnUrl, hasStripeSecretKey, resolvePlanPriceId, stripe } from "@/lib/stripe";
 import { getBaseUrl } from "@/lib/utils";
 
 export async function openBillingPortalAction() {
+  if (!hasStripeSecretKey()) {
+    redirect("/dashboard/billing?error=stripe-not-configured");
+  }
+
   const user = await ensureUserRecord();
   const subscription = await prisma.subscription.findUnique({ where: { userId: user.id } });
 
@@ -14,51 +18,80 @@ export async function openBillingPortalAction() {
     redirect("/dashboard/billing?error=no-customer");
   }
 
-  const session = await stripe.billingPortal.sessions.create({
-    customer: subscription.stripeCustomerId,
-    return_url: billingReturnUrl(),
-  });
+  let session;
+  try {
+    session = await stripe.billingPortal.sessions.create({
+      customer: subscription.stripeCustomerId,
+      return_url: billingReturnUrl(),
+    });
+  } catch {
+    redirect("/dashboard/billing?error=portal-unavailable");
+  }
 
   redirect(session.url);
 }
 
-export async function upgradePlanAction(formData: FormData) {
+export async function startSubscriptionCheckoutAction(formData: FormData) {
+  if (!hasStripeSecretKey()) {
+    redirect("/dashboard/billing?error=stripe-not-configured");
+  }
+
   const planName = String(formData.get("plan"));
   if (planName !== "PRO" && planName !== "MAX") {
     redirect("/dashboard/billing?error=invalid-plan");
   }
 
-  const priceId = getPlanPriceId(planName);
-  if (!priceId) {
-    redirect("/dashboard/billing?error=missing-price");
+  const user = await ensureUserRecord();
+  const plan = await prisma.plan.findUnique({ where: { name: planName } });
+  if (!plan || plan.price <= 0) {
+    redirect("/dashboard/billing?error=invalid-plan");
   }
 
-  const user = await ensureUserRecord();
-  const customer = await stripe.customers.create({
-    email: user.email,
-    name: user.name || undefined,
-    metadata: { userId: user.id },
-  });
+  const existingSubscription = await prisma.subscription.findUnique({ where: { userId: user.id } });
+  let stripeCustomerId = existingSubscription?.stripeCustomerId || "";
+
+  if (!stripeCustomerId) {
+    const customer = await stripe.customers.create({
+      email: user.email,
+      name: user.name || undefined,
+      metadata: { userId: user.id },
+    });
+    stripeCustomerId = customer.id;
+  }
 
   await prisma.subscription.upsert({
     where: { userId: user.id },
-    update: { stripeCustomerId: customer.id },
+    update: { stripeCustomerId, status: "INCOMPLETE" },
     create: {
       userId: user.id,
-      stripeCustomerId: customer.id,
+      stripeCustomerId,
       planId: user.planId,
       status: "INCOMPLETE",
     },
   });
 
+  let priceId: string;
+  try {
+    priceId = await resolvePlanPriceId(planName, plan.price);
+  } catch {
+    redirect("/dashboard/billing?error=price-unavailable");
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
-    customer: customer.id,
+    customer: stripeCustomerId,
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${getBaseUrl()}/dashboard/billing?success=1`,
+    success_url: `${getBaseUrl()}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${getBaseUrl()}/dashboard/billing?cancelled=1`,
     metadata: { userId: user.id, planName },
+    subscription_data: {
+      metadata: { userId: user.id, planName },
+    },
   });
 
   redirect(session.url || "/dashboard/billing");
+}
+
+export async function upgradePlanAction(formData: FormData) {
+  return startSubscriptionCheckoutAction(formData);
 }
