@@ -64,6 +64,7 @@ model User {
   stores        Store[]
   plan          Plan            @relation(fields: [planId], references: [id])
   subscription  Subscription?
+  notifications Notification[]
 
   @@index([planId])
 }
@@ -182,4 +183,19 @@ model Subscription {
   plan                 Plan               @relation(fields: [planId], references: [id])
 
   @@index([planId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String    @db.Uuid
+  title     String
+  message   String
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([readAt])
+  @@index([createdAt])
 }

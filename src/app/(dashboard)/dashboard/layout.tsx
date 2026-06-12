@@ -7,13 +7,31 @@ import { Header } from "@/components/dashboard/Header";
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await ensureUserRecord();
   const store = await prisma.store.findFirst({ where: { userId: user.id } });
+  const notifications = await prisma.notification.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+    take: 8,
+  });
   const pathname = (await headers()).get("x-pathname") || undefined;
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-950">
       <Sidebar currentPath={pathname} isAdmin={user.role === "ADMIN"} />
       <div className="min-w-0 flex-1">
-        <Header name={user.name} storeSlug={store?.slug} currentPath={pathname} isAdmin={user.role === "ADMIN"} />
+        <Header
+          name={user.name}
+          storeSlug={store?.slug}
+          currentPath={pathname}
+          isAdmin={user.role === "ADMIN"}
+          notifications={notifications.map((notification) => ({
+            id: notification.id,
+            title: notification.title,
+            message: notification.message,
+            href: notification.href,
+            read: Boolean(notification.readAt),
+            createdAt: notification.createdAt.toISOString(),
+          }))}
+        />
         <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>

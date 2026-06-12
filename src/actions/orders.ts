@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { checkoutSchema } from "@/lib/validators";
 import { rateLimits } from "@/lib/redis";
 import { stripe } from "@/lib/stripe";
-import { getBaseUrl } from "@/lib/utils";
+import { formatMoney, getBaseUrl } from "@/lib/utils";
 import { ensureUserRecord } from "@/lib/auth";
 
 const orderStatuses = new Set(["PENDING", "PAID", "FAILED", "REFUNDED"]);
@@ -85,6 +85,18 @@ export async function createCheckoutAction(_prevState: { error?: string }, formD
     },
     include: { store: true },
   });
+
+  await prisma.notification.create({
+    data: {
+      userId: order.store.userId,
+      title: `New order from ${order.buyerName}`,
+      message: `${formatMoney(Number(order.totalAmount), order.currency)} via ${order.paymentMethod.replace("_", " ")}.`,
+      href: "/dashboard/orders",
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/orders");
 
   if (parsed.data.paymentMethod === "DEV_MOBILE") {
     redirect(`/store/${order.store.slug}/success?order=${order.id}`);
