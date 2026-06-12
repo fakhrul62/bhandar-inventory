@@ -60,26 +60,26 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-slate-50/95 backdrop-blur-xl">
-      <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-3 sm:min-h-20 sm:px-6 sm:py-4">
+      <div className="flex min-h-16 items-center justify-between gap-2 px-3 py-3 sm:px-4 lg:min-h-20 lg:px-6 lg:py-4">
         <div className="min-w-0 flex-1">
-          <p className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#0f6b3a] sm:block">
+          <p className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#0f6b3a] lg:block">
             Bhandar workspace
           </p>
-          <h1 className="truncate text-lg font-semibold tracking-tight text-slate-950 sm:mt-1 sm:text-2xl">
+          <h1 className="text-base font-semibold leading-tight tracking-tight text-slate-950 sm:text-lg lg:mt-1 lg:truncate lg:text-2xl">
             {name ? `Welcome, ${name}` : "Welcome"}
           </h1>
         </div>
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          <Button asChild variant="outline" className="hidden sm:inline-flex">
+        <div className="flex shrink-0 items-center gap-1.5 lg:gap-2">
+          <Button asChild variant="outline" className="hidden lg:inline-flex">
             <Link href={`/store/${storeSlug || ""}`} target="_blank">
               <Store className="h-4 w-4" />
               View store
             </Link>
           </Button>
-          <Button asChild className="h-10 w-10 px-0 bg-[#0f6b3a] hover:bg-[#0b542d] sm:w-auto sm:px-4">
+          <Button asChild className="h-10 w-10 px-0 bg-[#0f6b3a] hover:bg-[#0b542d] lg:w-auto lg:px-4">
             <Link href="/dashboard/products/new" aria-label="Add product">
               <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Add product</span>
+              <span className="hidden lg:inline">Add product</span>
             </Link>
           </Button>
           <div className="relative">
@@ -100,7 +100,7 @@ export function Header({
             </Button>
 
             {notificationsOpen && (
-              <div className="fixed left-3 right-3 top-[72px] z-50 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-12 sm:w-[calc(100vw-2rem)] sm:max-w-sm">
+              <div className="fixed left-3 right-3 top-[72px] z-50 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl lg:absolute lg:left-auto lg:right-0 lg:top-12 lg:w-[calc(100vw-2rem)] lg:max-w-sm">
                 <div className="flex items-center justify-between gap-3 border-b border-slate-200 p-4">
                   <div>
                     <h2 className="font-semibold text-slate-950">Notifications</h2>
@@ -198,13 +198,13 @@ export function Header({
         </div>
       </div>
 
-      <nav className="flex gap-2 overflow-x-auto border-t border-slate-200 px-3 py-2 [scrollbar-width:none] lg:hidden" aria-label="Quick dashboard navigation">
+      <nav className="grid grid-cols-3 gap-2 border-t border-slate-200 px-3 py-2 sm:flex sm:overflow-x-auto sm:[scrollbar-width:none] lg:hidden" aria-label="Quick dashboard navigation">
         {items.slice(0, 5).map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition",
+              "min-w-0 shrink-0 rounded-lg px-2 py-2 text-center text-sm font-medium transition sm:px-3",
               currentPath === item.href ||
                 (item.href !== "/dashboard" && currentPath?.startsWith(item.href))
                 ? "bg-[#0f6b3a] text-white"
@@ -217,11 +217,20 @@ export function Header({
       </nav>
 
       {menuOpen && (
-        <div className="fixed inset-x-0 bottom-0 top-[113px] z-50 bg-slate-950/40 sm:top-[121px] lg:hidden" onClick={() => setMenuOpen(false)}>
+        <div className="fixed inset-0 z-[80] bg-slate-950/40 lg:hidden" onClick={() => setMenuOpen(false)}>
           <div
             className="ml-auto h-full w-full overflow-y-auto border-l border-slate-200 bg-white p-4 shadow-2xl sm:max-w-sm"
             onClick={(event) => event.stopPropagation()}
           >
+            <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0f6b3a]">Menu</p>
+                <p className="mt-1 font-semibold text-slate-950">Bhandar dashboard</p>
+              </div>
+              <Button type="button" variant="outline" size="icon" aria-label="Close menu" onClick={() => setMenuOpen(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
             <nav className="grid gap-1" aria-label="Mobile dashboard menu">
               {items.map((item) => {
                 const active =
