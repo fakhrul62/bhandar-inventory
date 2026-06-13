@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 
 export default function VerifyEmailPage() {
   return (
     <div className="w-full max-w-md animate-fade-up space-y-6 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-[#0f6b3a] text-white">
-        <MailCheck className="h-7 w-7" />
+        <Icon name="mail" className="h-7 w-7" />
       </div>
       <div>
         <h1 className="text-3xl font-semibold tracking-tight text-slate-950">

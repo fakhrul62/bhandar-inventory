@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { AlertCircle, Check, CreditCard, ExternalLink, ShieldCheck } from "lucide-react";
 import { openBillingPortalAction } from "@/actions/billing";
 import { ensureUserRecord } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Icon } from "@/components/ui/Icon";
 import { BillingSubmitButton } from "@/components/dashboard/BillingSubmitButton";
 
 const billingMessages: Record<string, { tone: "success" | "warning" | "error"; title: string; text: string }> = {
@@ -82,7 +82,7 @@ export default async function BillingPage({
                 : "border-amber-200 bg-amber-50 text-amber-800"
           }`}
         >
-          {message.tone === "success" ? <Check className="mt-0.5 h-4 w-4" /> : <AlertCircle className="mt-0.5 h-4 w-4" />}
+          {message.tone === "success" ? <Icon name="check" className="mt-0.5 h-4 w-4" /> : <Icon name="alertCircle" className="mt-0.5 h-4 w-4" />}
           <div>
             <p className="font-semibold">{message.title}</p>
             <p className="mt-1">{message.text}</p>
@@ -94,7 +94,7 @@ export default async function BillingPage({
         <div className="grid gap-6 lg:grid-cols-[1fr_280px] lg:items-center">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-[#0f6b3a]">
-              <ShieldCheck className="h-3.5 w-3.5" />
+              <Icon name="shield" className="h-3.5 w-3.5" />
               Current plan
             </div>
             <h2 className="mt-3 text-2xl font-semibold">{user.plan.name}</h2>
@@ -141,9 +141,9 @@ export default async function BillingPage({
             </p>
             <p className="mt-3 text-sm text-slate-500">{plan.productLimit}+ products</p>
             <ul className="mt-5 space-y-3 text-sm text-slate-600">
-              <li className="flex gap-2"><Check className="mt-0.5 h-4 w-4 text-[#0f6b3a]" />Storefront management</li>
-              <li className="flex gap-2"><Check className="mt-0.5 h-4 w-4 text-[#0f6b3a]" />Inventory and order tracking</li>
-              <li className="flex gap-2"><Check className="mt-0.5 h-4 w-4 text-[#0f6b3a]" />Server-side product limit enforcement</li>
+              <li className="flex gap-2"><Icon name="check" className="mt-0.5 h-4 w-4 text-[#0f6b3a]" />Storefront management</li>
+              <li className="flex gap-2"><Icon name="check" className="mt-0.5 h-4 w-4 text-[#0f6b3a]" />Inventory and order tracking</li>
+              <li className="flex gap-2"><Icon name="check" className="mt-0.5 h-4 w-4 text-[#0f6b3a]" />Server-side product limit enforcement</li>
             </ul>
             <div className="mt-auto pt-6">
               {plan.id === user.planId ? (
@@ -161,7 +161,7 @@ export default async function BillingPage({
               ) : (
                 <Button asChild className="w-full bg-[#0f6b3a] hover:bg-[#0b542d]">
                   <Link href={`/dashboard/billing/subscribe?plan=${plan.name}`}>
-                    <CreditCard className="h-4 w-4" />
+                    <Icon name="creditCard" className="h-4 w-4" />
                     Upgrade to {plan.name}
                   </Link>
                 </Button>
@@ -187,7 +187,7 @@ export default async function BillingPage({
             <Button asChild variant="outline">
               <Link href="/pricing">
                 Compare plans
-                <ExternalLink className="h-4 w-4" />
+                <Icon name="externalLink" className="h-4 w-4" />
               </Link>
             </Button>
           )}

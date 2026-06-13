@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/utils";
 import { MarketingHeaderServer } from "@/components/home/MarketingHeaderServer";
+import { Icon } from "@/components/ui/Icon";
+
+export const dynamic = "force-dynamic";
 
 export default async function PricingPage() {
   const plans = await prisma.plan.findMany({ orderBy: { price: "asc" } });
@@ -37,7 +39,7 @@ export default async function PricingPage() {
                 <PlanLine text="Order tracking dashboard" />
               </div>
               <Link href="/register" className={`mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg text-sm font-bold ${plan.id === proPlan?.id ? "bg-[#1A56DB] text-white hover:bg-[#1038A8]" : "border border-[#E2E8F0] bg-white text-[#0F172A] hover:border-[#1A56DB] hover:text-[#1A56DB]"}`}>
-                Choose {plan.name.toLowerCase()} <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+                Choose {plan.name.toLowerCase()} <Icon name="arrowRight" className="h-4 w-4" strokeWidth={1.5} />
               </Link>
             </article>
           ))}
@@ -50,7 +52,7 @@ export default async function PricingPage() {
 function PlanLine({ text }: { text: string }) {
   return (
     <p className="flex items-center gap-3 text-sm text-[#64748B]">
-      <Check className="h-4 w-4 text-[#16A34A]" strokeWidth={1.5} />
+      <Icon name="check" className="h-4 w-4 text-[#16A34A]" strokeWidth={1.5} />
       {text}
     </p>
   );

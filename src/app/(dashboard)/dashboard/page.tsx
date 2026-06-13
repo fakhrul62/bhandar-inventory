@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { AlertTriangle, Package, ShoppingBag, Store, Wallet } from "lucide-react";
 import { ensureUserRecord } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Icon } from "@/components/ui/Icon";
 import { StatCard } from "@/components/dashboard/StatCard";
 
 export default async function DashboardPage() {
@@ -56,10 +56,10 @@ export default async function DashboardPage() {
       </section>
 
       <section className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Products" value={`${totalProducts}/${user.plan.productLimit}`} helper={`${user.plan.name} plan usage`} icon={Package} />
-        <StatCard label="Orders" value={String(orders.length)} helper="Recent customer orders" icon={ShoppingBag} />
-        <StatCard label="Revenue" value={`${formatMoney(revenueBdt, "BDT")} / ${formatMoney(revenueUsd, "USD")}`} helper="Paid orders only" icon={Wallet} />
-        <StatCard label="Low stock" value={String(lowStock)} helper="Physical products at 5 or less" icon={AlertTriangle} />
+        <StatCard label="Products" value={`${totalProducts}/${user.plan.productLimit}`} helper={`${user.plan.name} plan usage`} icon="briefcase" />
+        <StatCard label="Orders" value={String(orders.length)} helper="Recent customer orders" icon="shoppingBag" />
+        <StatCard label="Revenue" value={`${formatMoney(revenueBdt, "BDT")} / ${formatMoney(revenueUsd, "USD")}`} helper="Paid orders only" icon="wallet" />
+        <StatCard label="Low stock" value={String(lowStock)} helper="Physical products at 5 or less" icon="alertTriangle" />
       </section>
 
       <section className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)] lg:gap-6">
@@ -70,7 +70,7 @@ export default async function DashboardPage() {
           </div>
           {orders.length === 0 ? (
             <div className="p-8 text-center">
-              <ShoppingBag className="mx-auto h-10 w-10 text-slate-300" />
+              <Icon name="shoppingBag" className="mx-auto h-10 w-10 text-slate-300" />
               <h3 className="mt-3 font-semibold">No orders yet</h3>
               <p className="mt-1 text-sm text-slate-500">Publish your store and share the link to start collecting orders.</p>
               <Button asChild className="mt-5 bg-[#0f6b3a] hover:bg-[#0b542d]">
@@ -142,7 +142,7 @@ export default async function DashboardPage() {
         <Card className="self-start p-4 sm:p-6">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-50 text-[#f5a623]">
-              <Store className="h-5 w-5" />
+              <Icon name="store" className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <h2 className="font-semibold">Quick actions</h2>

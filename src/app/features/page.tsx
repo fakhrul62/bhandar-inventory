@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, BarChart3, Package, Store } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { MarketingHeaderServer } from "@/components/home/MarketingHeaderServer";
+import { Icon, type IconName } from "@/components/ui/Icon";
+
+export const dynamic = "force-dynamic";
 
 export default async function FeaturesPage() {
   const [stores, products, orders] = await Promise.all([
@@ -25,9 +27,9 @@ export default async function FeaturesPage() {
 
       <section className="border-y border-[#E2E8F0] bg-white">
         <div className="mx-auto grid max-w-[1440px] gap-5 px-6 py-[72px] md:grid-cols-3 lg:px-20 lg:py-[120px]">
-          <Feature icon={Package} title="Inventory Tracking" stat={`${products} products`} text="Track physical and digital products, stock counts, variants, images, and publish state from the dashboard." />
-          <Feature icon={Store} title="Storefront Manager" stat={`${stores} public stores`} text="Each public store gets a working storefront URL with product discovery, cart, and checkout." />
-          <Feature icon={BarChart3} title="Sales Analytics" stat={`${orders} orders`} text="Orders are counted with buyer details, payment method, items, totals, and delivery information." />
+          <Feature icon="briefcase" title="Inventory Tracking" stat={`${products} products`} text="Track physical and digital products, stock counts, variants, images, and publish state from the dashboard." />
+          <Feature icon="store" title="Storefront Manager" stat={`${stores} public stores`} text="Each public store gets a working storefront URL with product discovery, cart, and checkout." />
+          <Feature icon="chart" title="Sales Analytics" stat={`${orders} orders`} text="Orders are counted with buyer details, payment method, items, totals, and delivery information." />
         </div>
       </section>
 
@@ -36,7 +38,7 @@ export default async function FeaturesPage() {
           <h2 className="text-3xl font-extrabold tracking-tight">Ready to see the dashboard?</h2>
           <p className="mt-3 max-w-2xl text-white/80">Create an account, add products, and publish a storefront when you are ready.</p>
           <Link href="/register" className="mt-8 inline-flex h-12 items-center gap-2 rounded-lg bg-white px-6 text-sm font-bold text-[#1A56DB]">
-            Start free <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+            Start free <Icon name="arrowRight" className="h-4 w-4" strokeWidth={1.5} />
           </Link>
         </div>
       </section>
@@ -44,10 +46,10 @@ export default async function FeaturesPage() {
   );
 }
 
-function Feature({ icon: Icon, title, stat, text }: { icon: typeof Package; title: string; stat: string; text: string }) {
+function Feature({ icon, title, stat, text }: { icon: IconName; title: string; stat: string; text: string }) {
   return (
     <article className="rounded-xl border border-[#E2E8F0] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
-      <Icon className="h-7 w-7 text-[#1A56DB]" strokeWidth={1.5} />
+      <Icon name={icon} className="h-7 w-7 text-[#1A56DB]" strokeWidth={1.5} />
       <p className="mt-6 text-sm font-bold uppercase tracking-[0.12em] text-[#1A56DB]">{stat}</p>
       <h2 className="mt-3 text-xl font-semibold">{title}</h2>
       <p className="mt-3 text-sm leading-6 text-[#64748B]">{text}</p>

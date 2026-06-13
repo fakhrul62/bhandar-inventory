@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { Package, Plus, Search } from "lucide-react";
 import { deleteProductAction } from "@/actions/products";
 import { ensureUserRecord } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Icon } from "@/components/ui/Icon";
 import { Input } from "@/components/ui/Input";
 import { SafeImage } from "@/components/ui/SafeImage";
 
@@ -43,7 +43,7 @@ export default async function ProductsPage({
         </div>
         <Button asChild disabled={atLimit} className="bg-[#0f6b3a] hover:bg-[#0b542d]">
           <Link href={atLimit ? "/dashboard/billing" : "/dashboard/products/new"}>
-            <Plus className="h-4 w-4" />
+            <Icon name="plus" className="h-4 w-4" />
             {atLimit ? "Upgrade to add more" : "Add product"}
           </Link>
         </Button>
@@ -67,7 +67,7 @@ export default async function ProductsPage({
       <Card className="p-0">
         <form className="grid gap-3 border-b border-slate-200 p-5 md:grid-cols-[1fr_180px_180px_auto]">
           <div className="relative">
-            <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+            <Icon name="search" className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
             <Input name="q" defaultValue={params.q} placeholder="Search products" className="pl-9" />
           </div>
           <select name="type" defaultValue={params.type || ""} className="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm">
@@ -85,7 +85,7 @@ export default async function ProductsPage({
 
         {products.length === 0 ? (
           <div className="p-10 text-center">
-            <Package className="mx-auto h-10 w-10 text-slate-300" />
+            <Icon name="briefcase" className="mx-auto h-10 w-10 text-slate-300" />
             <h3 className="mt-3 font-semibold">Add your first product</h3>
             <p className="mt-1 text-sm text-slate-500">Create physical or digital products and publish them to your storefront.</p>
             <Button asChild className="mt-5 bg-[#0f6b3a] hover:bg-[#0b542d]">
@@ -115,7 +115,7 @@ export default async function ProductsPage({
                             src={product.imageUrls[0]}
                             alt={product.name}
                             className="h-full w-full object-cover"
-                            fallback={<Package className="h-5 w-5" />}
+                            fallback={<Icon name="briefcase" className="h-5 w-5" />}
                           />
                         </div>
                         <div>

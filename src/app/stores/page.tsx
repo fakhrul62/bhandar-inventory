@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Store } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MarketingHeaderServer } from "@/components/home/MarketingHeaderServer";
+import { Icon } from "@/components/ui/Icon";
+
+export const dynamic = "force-dynamic";
 
 export default async function StoresPage() {
   const stores = await prisma.store.findMany({
@@ -55,14 +57,14 @@ export default async function StoresPage() {
                 <p className="mt-2 text-sm text-[#64748B]">Orders counted: {store._count.orders}</p>
                 <p className="mt-2 text-sm text-[#64748B]">Active since: {activeSince(store.createdAt)}</p>
                 <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#1A56DB]">
-                  Open storefront <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+                  Open storefront <Icon name="arrowRight" className="h-4 w-4" strokeWidth={1.5} />
                 </span>
               </Link>
             ))}
           </div>
         ) : (
           <div className="rounded-xl border border-[#E2E8F0] bg-white p-8 text-center shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
-            <Store className="mx-auto h-8 w-8 text-[#1A56DB]" strokeWidth={1.5} />
+            <Icon name="store" className="mx-auto h-8 w-8 text-[#1A56DB]" strokeWidth={1.5} />
             <h2 className="mt-4 text-lg font-bold">No public stores yet</h2>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#64748B]">When a store is marked public, it will appear here automatically.</p>
             <Link href="/register" className="mt-6 inline-flex h-11 items-center rounded-lg bg-[#1A56DB] px-5 text-sm font-bold text-white hover:bg-[#1038A8]">

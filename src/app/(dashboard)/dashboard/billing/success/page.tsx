@@ -1,12 +1,12 @@
 import Link from "next/link";
 import type Stripe from "stripe";
-import { AlertCircle, ArrowRight, CheckCircle2, ReceiptText } from "lucide-react";
 import { ensureUserRecord } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasStripeSecretKey, stripe } from "@/lib/stripe";
 import { syncStripeSubscription } from "@/lib/subscriptions";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Icon } from "@/components/ui/Icon";
 
 async function getSyncedSubscription(sessionId?: string) {
   if (!hasStripeSecretKey()) {
@@ -69,7 +69,7 @@ export default async function SubscriptionSuccessPage({
         {"subscription" in result && result.subscription ? (
           <>
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-[#0f6b3a]">
-              <CheckCircle2 className="h-7 w-7" />
+              <Icon name="check" className="h-7 w-7" />
             </div>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-[#0f6b3a]">Payment successful</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">Your {result.subscription.plan.name} plan is active.</h1>
@@ -100,12 +100,12 @@ export default async function SubscriptionSuccessPage({
               <Button asChild className="bg-[#0f6b3a] hover:bg-[#0b542d]">
                 <Link href="/dashboard">
                   Go to dashboard
-                  <ArrowRight className="h-4 w-4" />
+                  <Icon name="arrowRight" className="h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/dashboard/billing">
-                  <ReceiptText className="h-4 w-4" />
+                  <Icon name="message" className="h-4 w-4" />
                   View billing
                 </Link>
               </Button>
@@ -114,7 +114,7 @@ export default async function SubscriptionSuccessPage({
         ) : (
           <>
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-50 text-amber-700">
-              <AlertCircle className="h-7 w-7" />
+              <Icon name="alertCircle" className="h-7 w-7" />
             </div>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">Verification pending</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">We could not confirm the subscription yet.</h1>

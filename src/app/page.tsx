@@ -1,20 +1,11 @@
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
-import {
-  ArrowRight,
-  BarChart3,
-  Bell,
-  Check,
-  GitBranch,
-  LayoutDashboard,
-  Package,
-  Rocket,
-  Store,
-} from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatMoney } from "@/lib/utils";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MarketingHeaderServer } from "@/components/home/MarketingHeaderServer";
+import { Icon, type IconName } from "@/components/ui/Icon";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const [stores, plans, storeCount, productCount, orderCount, recentProducts] = await Promise.all([
@@ -68,7 +59,7 @@ export default async function Home() {
               Start for free
             </Link>
             <Link href="/features" className="inline-flex h-12 items-center gap-2 text-sm font-bold text-[#1A56DB] transition-colors duration-200 hover:text-[#1038A8]">
-              See how it works <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+              See how it works <Icon name="arrowRight" className="h-4 w-4" strokeWidth={1.5} />
             </Link>
           </div>
           <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[0.85rem] text-[#64748B]">
@@ -121,7 +112,7 @@ export default async function Home() {
           <EmptyState title="No public stores yet" text="When a store is marked public, it will appear here automatically." />
         )}
         <Link href="/stores" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#1A56DB] hover:text-[#1038A8]">
-          View all stores <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+          View all stores <Icon name="arrowRight" className="h-4 w-4" strokeWidth={1.5} />
         </Link>
       </section>
 
@@ -132,9 +123,9 @@ export default async function Home() {
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#0F172A] lg:text-[2rem]">Everything your business needs. Nothing it does not.</h2>
           </div>
           <div className="grid gap-5 lg:grid-cols-3">
-            <FeatureCard icon={Package} title="Inventory Tracking" text={`Track products across your catalog. This workspace currently contains ${productCount} product${productCount === 1 ? "" : "s"}.`} />
-            <FeatureCard icon={Store} title="Storefront Manager" text={`Publish storefronts customers can open directly. ${stores.length} public store${stores.length === 1 ? " is" : "s are"} live now.`} />
-            <FeatureCard icon={BarChart3} title="Sales Analytics" text={`Keep order activity visible. Bhandar has counted ${orderCount} order${orderCount === 1 ? "" : "s"} so far.`} />
+            <FeatureCard icon="briefcase" title="Inventory Tracking" text={`Track products across your catalog. This workspace currently contains ${productCount} product${productCount === 1 ? "" : "s"}.`} />
+            <FeatureCard icon="store" title="Storefront Manager" text={`Publish storefronts customers can open directly. ${stores.length} public store${stores.length === 1 ? " is" : "s are"} live now.`} />
+            <FeatureCard icon="chart" title="Sales Analytics" text={`Keep order activity visible. Bhandar has counted ${orderCount} order${orderCount === 1 ? "" : "s"} so far.`} />
           </div>
         </div>
       </section>
@@ -146,9 +137,9 @@ export default async function Home() {
         </div>
         <div className="relative mt-12 grid gap-6 md:grid-cols-3">
           <div className="absolute left-[16.7%] right-[16.7%] top-12 hidden border-t border-dashed border-[#E2E8F0] md:block" />
-          <Step number="01" icon={LayoutDashboard} title="Create account" text="Open your dashboard and set the basics for your business." />
-          <Step number="02" icon={Package} title="Add inventory" text="Add products, stock counts, images, and variants." />
-          <Step number="03" icon={Rocket} title="Go live" text="Publish your storefront and start taking orders." />
+          <Step number="01" icon="grid" title="Create account" text="Open your dashboard and set the basics for your business." />
+          <Step number="02" icon="briefcase" title="Add inventory" text="Add products, stock counts, images, and variants." />
+          <Step number="03" icon="spark" title="Go live" text="Publish your storefront and start taking orders." />
         </div>
       </section>
 
@@ -165,7 +156,7 @@ export default async function Home() {
           </div>
           <div className="mt-8 text-center">
             <Link href="/pricing" className="inline-flex items-center gap-2 text-sm font-bold text-[#1A56DB] hover:text-[#1038A8]">
-              View full pricing <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+              View full pricing <Icon name="arrowRight" className="h-4 w-4" strokeWidth={1.5} />
             </Link>
           </div>
         </div>
@@ -234,9 +225,9 @@ function DashboardMockup({
       </div>
       <div className="grid min-h-[340px] grid-cols-[64px_1fr] overflow-hidden rounded-lg sm:min-h-[370px] sm:grid-cols-[78px_1fr] xl:min-h-[410px] xl:grid-cols-[82px_1fr]">
         <aside className="border-r border-[#E2E8F0] bg-[#F9FAFB] p-3">
-          {[Package, Store, BarChart3, Bell].map((Icon, index) => (
+          {(["briefcase", "store", "chart", "bell"] satisfies IconName[]).map((icon, index) => (
             <div key={index} className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg sm:h-10 sm:w-10 ${index === 0 ? "bg-[#EEF3FD] text-[#1A56DB]" : "text-[#64748B]"}`}>
-              <Icon className="h-5 w-5" strokeWidth={1.5} />
+              <Icon name={icon} className="h-5 w-5" strokeWidth={1.5} />
             </div>
           ))}
         </aside>
@@ -295,7 +286,7 @@ function Snapshot({ label, value }: { label: string; value: number }) {
 function TrustSignal({ text }: { text: string }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      <Check className="h-4 w-4 text-[#16A34A]" strokeWidth={1.5} />
+      <Icon name="check" className="h-4 w-4 text-[#16A34A]" strokeWidth={1.5} />
       {text}
     </span>
   );
@@ -325,31 +316,31 @@ function SectionIntro({ eyebrow, title, text }: { eyebrow: string; title: string
 function EmptyState({ title, text }: { title: string; text: string }) {
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-white p-8 text-center shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
-      <Store className="mx-auto h-8 w-8 text-[#1A56DB]" strokeWidth={1.5} />
+      <Icon name="store" className="mx-auto h-8 w-8 text-[#1A56DB]" strokeWidth={1.5} />
       <h3 className="mt-4 text-lg font-bold">{title}</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#64748B]">{text}</p>
     </div>
   );
 }
 
-function FeatureCard({ icon: Icon, title, text }: { icon: LucideIcon; title: string; text: string }) {
+function FeatureCard({ icon, title, text }: { icon: IconName; title: string; text: string }) {
   return (
     <article className="reveal rounded-xl border border-[#E2E8F0] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
-      <Icon className="h-6 w-6 text-[#1A56DB]" strokeWidth={1.5} />
+      <Icon name={icon} className="h-6 w-6 text-[#1A56DB]" strokeWidth={1.5} />
       <h3 className="mt-5 text-xl font-semibold text-[#0F172A]">{title}</h3>
       <p className="mt-4 text-base leading-7 text-[#64748B]">{text}</p>
       <Link href="/features" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#1A56DB] hover:text-[#1038A8]">
-        Learn more <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+        Learn more <Icon name="arrowRight" className="h-4 w-4" strokeWidth={1.5} />
       </Link>
     </article>
   );
 }
 
-function Step({ number, icon: Icon, title, text }: { number: string; icon: LucideIcon; title: string; text: string }) {
+function Step({ number, icon, title, text }: { number: string; icon: IconName; title: string; text: string }) {
   return (
     <article className="reveal relative rounded-xl border border-[#E2E8F0] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
       <span aria-hidden="true" className="absolute right-5 top-3 text-6xl font-extrabold leading-none text-[#EEF3FD]">{number}</span>
-      <Icon className="relative h-7 w-7 text-[#1A56DB]" strokeWidth={1.5} />
+      <Icon name={icon} className="relative h-7 w-7 text-[#1A56DB]" strokeWidth={1.5} />
       <h3 className="relative mt-8 text-[1.1rem] font-semibold text-[#0F172A]">{title}</h3>
       <p className="relative mt-2 text-sm leading-6 text-[#64748B]">{text}</p>
     </article>
@@ -365,7 +356,7 @@ function PlanCard({ name, price, limit, popular = false }: { name: string; price
       </div>
       <p className="mt-5 text-3xl font-extrabold tracking-tight">{price}</p>
       <p className="mt-3 flex items-center gap-3 text-sm text-[#64748B]">
-        <Check className="h-4 w-4 text-[#16A34A]" strokeWidth={1.5} />
+        <Icon name="check" className="h-4 w-4 text-[#16A34A]" strokeWidth={1.5} />
         {limit}
       </p>
     </article>
@@ -388,7 +379,7 @@ function Footer() {
           </div>
           <p className="mt-4 text-sm leading-6 text-[#64748B]">Every product tracked. Every sale counted.</p>
           <Link href="https://github.com/fakhrul62/bhandar-inventory" aria-label="Bhandar GitHub repository" className="mt-5 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#E2E8F0] text-[#64748B] transition-colors duration-200 hover:border-[#1A56DB] hover:text-[#1A56DB]">
-            <GitBranch className="h-4 w-4" strokeWidth={1.5} />
+            <Icon name="layers" className="h-4 w-4" strokeWidth={1.5} />
           </Link>
         </div>
         <FooterColumn title="Product" links={[["Features", "/features"], ["Pricing", "/pricing"], ["Stores", "/stores"]]} />

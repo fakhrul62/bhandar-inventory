@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { StorefrontClient } from "@/components/store/StorefrontClient";
 import { SafeImage } from "@/components/ui/SafeImage";
 
+export const dynamic = "force-dynamic";
+
 export default async function PublicStorePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const store = await prisma.store.findUnique({

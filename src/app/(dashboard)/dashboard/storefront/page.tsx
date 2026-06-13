@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Copy } from "lucide-react";
 import { ensureUserRecord } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Icon } from "@/components/ui/Icon";
 import { StorefrontForm } from "@/components/dashboard/StorefrontForm";
 import { SafeImage } from "@/components/ui/SafeImage";
 
@@ -42,7 +42,7 @@ export default async function StorefrontPage() {
               <Link href={url} target="_blank">Open store</Link>
             </Button>
             <Button variant="outline">
-              <Copy className="h-4 w-4" />
+              <Icon name="copy" className="h-4 w-4" />
               Copy link
             </Button>
           </div>
